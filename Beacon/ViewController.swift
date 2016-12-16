@@ -7,17 +7,23 @@
 //
 
 import UIKit
+import UserNotifications
 
  class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        UNUserNotificationCenter.addObserver(self, forKeyPath: "handleAppLaunchFromNotification", options: NSKeyValueObservingOptions(rawValue: 0), context: nil)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
+    func handleAppLaunchFromNotification() {
+       print("handleAppLaunchFromNotification")
+    }
+
 }
+
 
