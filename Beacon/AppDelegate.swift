@@ -9,51 +9,86 @@
 import UIKit
 import CoreLocation
 import UserNotifications;
+import CoreBluetooth
 
 @UIApplicationMain
- class AppDelegate: UIResponder, UIApplicationDelegate,CLLocationManagerDelegate {
+ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate {
     
     
 
     var window: UIWindow?
     
     var lastProximity: CLProximity?
-    
     let beaconIdentifier: String = "M4U"
-    
     var locationManager: CLLocationManager!
-    var count: Int = 0
-    
-    
     let uuidString = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6"
+    
+    let center = UNUserNotificationCenter.current()
+    let notificationDelegate = FDNLNotificationDelegate()
+    
+
+    var centralManager = CBCentralManager()
+    
+
+    class func sharedInstance() -> AppDelegate{
+        return UIApplication.shared.delegate as! AppDelegate
+    }
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         
         
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
-            if !accepted {
-                print("Notification access denied.")
+        let options: UNAuthorizationOptions = [.alert, .sound];
+        
+        
+        center.requestAuthorization(options: options) {
+            (granted, error) in
+            if !granted {
+                print("Something went wrong")
             }
         }
         
-        let action = UNNotificationAction(identifier: "remindLater", title: "Remind me later", options: [])
-        let category = UNNotificationCategory(identifier: "myCategory", actions: [action], intentIdentifiers: [], options: [])
-        UNUserNotificationCenter.current().setNotificationCategories([category])
+        center.getNotificationSettings { (settings) in
+            if settings.authorizationStatus != .authorized {
+                // Notifications not allowed
+            }
+        }
         
-        
+        center.delegate = notificationDelegate
         
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.requestAlwaysAuthorization()
         locationManager.pausesLocationUpdatesAutomatically = false
         
-        startScanning()
+        startMonitor()
         
 
         return true
     }
+    
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        
+    }
+    
+    func startMonitor() -> Void {
+        
+    
+            centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main, options: [CBCentralManagerOptionShowPowerAlertKey: true])
+        
+            let beaconUUID:NSUUID = NSUUID(uuidString: uuidString.uppercased())!
+            let beaconRegion = CLBeaconRegion(proximityUUID: beaconUUID as UUID,identifier: beaconIdentifier)
+        
+            beaconRegion.notifyEntryStateOnDisplay = true
+            locationManager.delegate = self
+            locationManager.startMonitoring(for: beaconRegion)
+            locationManager.startRangingBeacons(in: beaconRegion)
+            locationManager.startUpdatingLocation()
+        
+    }
+
+
 
     func showPromoVC() -> Void {
 
@@ -75,72 +110,88 @@ import UserNotifications;
     
     func sendLocalNotificationWithMessage(message: String!) {
         
+        // Swift
         let content = UNMutableNotificationContent()
-        
-        content.categoryIdentifier = "awesomeNotification"
-        content.title = "Cielo Lio"
-        content.body = message
+        content.title = "Don't forget"
+        content.body = "Buy some milk"
         content.sound = UNNotificationSound.default()
         
-        // Deliver the notification in five seconds.
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-        let request = UNNotificationRequest(identifier: "FiveSecond", content: content, trigger: trigger)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 300, repeats: false)
         
-        // Schedule the notification.
-        let center = UNUserNotificationCenter.current()
-        center.add(request) { (error) in
-            print( "error")
+        // Swift
+        let identifier = "FDNLLocalNotification"
+        let request = UNNotificationRequest(identifier: identifier,
+                                            content: content, trigger: trigger)
+        center.add(request, withCompletionHandler: { (error) in
+            if error != nil {
+                // Something went wrong
+            }
+        })
+    }
+
+
+    
+}
+
+extension AppDelegate: CLLocationManagerDelegate {
+    
+    
+    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+        
+        if state == .inside {
+            print("locationManager didDetermineState OUTSINSIDEIDE for \(region.identifier)");
         }
-        print("should have been added")
+        if state == .outside {
+            print("locationManager didDetermineState OUTSIDE for \(region.identifier)");
+        }
         
+        if state == .unknown {
+            print("locationManager didDetermineState Unknown for \(region.identifier)");
+        }
     }
     
-    
-    private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        
-        if status == .authorizedAlways {
-            if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-                if CLLocationManager.isRangingAvailable() {
-                    startScanning()
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        print(region.identifier)
+        if beaconIdentifier ==  region.identifier {
+            
+            if beacons.count > 0  {
+                
+                for beacon in  beacons {
+                    
+                    if beacon.proximityUUID.uuidString.uppercased() == beaconIdentifier.uppercased() {
+                        manager.stopRangingBeacons(in: region)
+                        break
+                    }
                 }
             }
         }
     }
     
     
-    func startScanning() {
-        
-        let beaconUUID:NSUUID = NSUUID(uuidString: uuidString.uppercased())!
-        let beaconRegion = CLBeaconRegion(proximityUUID: beaconUUID as UUID,identifier: beaconIdentifier)
-        
-        beaconRegion.notifyEntryStateOnDisplay = true
-        locationManager.startMonitoring(for: beaconRegion)
-        locationManager.startRangingBeacons(in: beaconRegion)
-        print("startScanning")
+    func alert(message: String) -> Void {
+        let alert = UIAlertController(title:"Debug", message:message , preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title:"Ok", style: UIAlertActionStyle.default, handler: nil))
+        self.window?.rootViewController!.present(alert, animated: true, completion: nil)
     }
     
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        print("didEnterRegion")
-        sendLocalNotificationWithMessage(message: "didEnterRegion")
+    private func locationManager(manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        print("Enter in region")
+        if beaconIdentifier ==  region.identifier {
+            manager.startRangingBeacons(in: region as! CLBeaconRegion)
+            manager.startUpdatingLocation()
+        }
     }
     
     func locationManager(_ manager: CLLocationManager,didExitRegion region: CLRegion) {
-        print("didExitRegion");
+        print("Exit region")
+
+        manager.stopRangingBeacons(in: region as! CLBeaconRegion)
     }
     
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        
-        if beacons.count > 0 {
-            _ = beacons[0]
-             print("beacon:\(beacons[0].proximityUUID.uuidString)")
-            
-        }
-    }
-
+  
     
-
-
 }
+
 
 
 

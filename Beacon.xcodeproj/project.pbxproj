@@ -16,6 +16,7 @@
 		926132A71E02AE33009E68B4 /* BeaconUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926132A61E02AE33009E68B4 /* BeaconUITests.swift */; };
 		926132B61E032C13009E68B4 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 926132B51E032C13009E68B4 /* MapKit.framework */; };
 		926132B81E043046009E68B4 /* PromoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926132B71E043046009E68B4 /* PromoViewController.swift */; };
+		929133AD1E0BF598004156DB /* FDNLNotificationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 929133AC1E0BF598004156DB /* FDNLNotificationDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		926132A81E02AE33009E68B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		926132B51E032C13009E68B4 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		926132B71E043046009E68B4 /* PromoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromoViewController.swift; sourceTree = "<group>"; };
+		929133AC1E0BF598004156DB /* FDNLNotificationDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FDNLNotificationDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +105,7 @@
 		926132851E02AE32009E68B4 /* Beacon */ = {
 			isa = PBXGroup;
 			children = (
+				929133AC1E0BF598004156DB /* FDNLNotificationDelegate.swift */,
 				926132861E02AE32009E68B4 /* AppDelegate.swift */,
 				926132881E02AE32009E68B4 /* ViewController.swift */,
 				926132B71E043046009E68B4 /* PromoViewController.swift */,
@@ -208,7 +211,7 @@
 				TargetAttributes = {
 					926132821E02AE32009E68B4 = {
 						CreatedOnToolsVersion = 8.2;
-						DevelopmentTeam = FD37M2LA3J;
+						DevelopmentTeam = X434P4DGS5;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -288,6 +291,7 @@
 				926132891E02AE32009E68B4 /* ViewController.swift in Sources */,
 				926132871E02AE32009E68B4 /* AppDelegate.swift in Sources */,
 				926132B81E043046009E68B4 /* PromoViewController.swift in Sources */,
+				929133AD1E0BF598004156DB /* FDNLNotificationDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,7 +441,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = FD37M2LA3J;
+				DEVELOPMENT_TEAM = X434P4DGS5;
 				INFOPLIST_FILE = Beacon/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -451,7 +455,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = FD37M2LA3J;
+				DEVELOPMENT_TEAM = X434P4DGS5;
 				INFOPLIST_FILE = Beacon/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
